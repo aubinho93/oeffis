@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="horizontal"
+	android:layout_width="fill_parent"
+	android:layout_height="wrap_content"
+	android:paddingLeft="6dip"
+	android:paddingRight="6dip"
+	android:minHeight="?android:attr/listPreferredItemHeight">
+	<TextView
+		android:id="@+id/line"
+		android:layout_width="wrap_content"
+		android:layout_height="fill_parent"
+		android:text="2"
+		android:textAppearance="?android:attr/textAppearanceLarge"
+		android:gravity="center_vertical"/>
+	<TextView
+		android:id="@+id/destination"
+		android:layout_width="wrap_content"
+		android:layout_height="fill_parent"
+		android:paddingLeft="6dip"
+		android:gravity="center_vertical"/>
+	<TextView
+		android:id="@+id/departure"
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent"
+		android:text="in 24 min"
+		android:textAppearance="?android:attr/textAppearanceLarge"
+		android:gravity="right|center_vertical"/>
+</LinearLayout>
