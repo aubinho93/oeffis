@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string-array name="updaterate_entries">
+		<item>13 seconds</item>
+		<item>23 seconds</item>
+		<item>31 seconds</item>
+		<item>1 minute</item>
+	</string-array>
+	<string-array name="updaterate_values" translatable="false">
+		<item>13</item>
+		<item>23</item>
+		<item>31</item>
+		<item>60</item>
+	</string-array>
+	<string-array name="dataclient_entries">
+		<item>qando</item>
+		<item>itip</item>
+	</string-array>
+	<string-array name="dataclient_values">
+		<item>net.oeffis.data.qando.QandoClient</item>
+		<item>net.oeffis.data.itip.ITipClient</item>
+	</string-array>
+</resources>

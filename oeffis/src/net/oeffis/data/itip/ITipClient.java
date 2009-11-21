@@ -11,12 +11,12 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import net.oeffis.Departure;
 import net.oeffis.R;
 import net.oeffis.data.DataClient;
 import net.oeffis.data.DataClientException;
 import net.oeffis.data.DataSource;
 import net.oeffis.data.DateGuesser;
+import net.oeffis.data.Departure;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;

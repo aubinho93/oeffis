@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+	android:title="öffis settings"
+	android:key="parent">
+	<ListPreference
+ 		android:key="updaterate"
+ 		android:defaultValue="13"
+		android:title="@string/updaterate"
+		android:summary="@string/updaterate.summary"
+ 		android:entries="@array/updaterate_entries"
+		android:entryValues="@array/updaterate_values" />
+	<ListPreference
+ 		android:key="dataclient"
+ 		android:defaultValue="net.oeffis.data.qando.QandoClient"
+		android:title="@string/dataclient"
+		android:summary="@string/dataclient.summary"
+ 		android:entries="@array/dataclient_entries"
+		android:entryValues="@array/dataclient_values" />
+</PreferenceScreen>

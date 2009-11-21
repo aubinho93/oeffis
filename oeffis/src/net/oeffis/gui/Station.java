@@ -1,4 +1,4 @@
-package net.oeffis;
+package net.oeffis.gui;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -6,8 +6,11 @@ import java.util.Comparator;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import net.oeffis.R;
+import net.oeffis.Preferences;
 import net.oeffis.data.DataClient;
 import net.oeffis.data.DataClientException;
+import net.oeffis.data.Departure;
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
@@ -50,7 +53,7 @@ public class Station extends Activity {
 		station = getIntent().getDataString().substring("oeffis:".length());
 		setContentView(R.layout.station);
 		
-		final Settings settings = new Settings(this);
+		final Preferences settings = new Preferences(this);
 		
 		if(dataClient == null) {
 			dataClient = (DataClient<String, Departure>) settings.getDataClient();
