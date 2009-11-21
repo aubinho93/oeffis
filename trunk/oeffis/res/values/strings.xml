@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">öffis</string>
+    
+    <!-- itip config -->
+    <string name="itip.enc">ISO-8859-1</string>
+    <string name="itip.url">http://www.wienerlinien.at/itip/haltestelle/anzeige.php?haltestelle=%s</string>
+    
+    <!-- qando config -->
+    <string name="qando.enc">ISO-8859-1</string>
+    <string name="qando.url">http://api.wlvor.fluidtime.com/wlvor/api_get_monitor.ft?clientid=1258147077704&amp;clientversion=1.1.2&amp;stop=%s</string>
+</resources>
