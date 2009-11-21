@@ -1,7 +1,10 @@
-package net.oeffis;
+package net.oeffis.gui;
 
 import java.util.Date;
 import java.util.List;
+
+import net.oeffis.R;
+import net.oeffis.data.Departure;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,6 +40,10 @@ public class DepartureAdapter extends ArrayAdapter<Departure> {
 	}
 	
 	private static String prettyTimeUntil(Date date) {
+		
+		if(date == null) {
+			return "?";
+		}
 		
 		Date now = new Date();
 		if(date.getTime() - now.getTime() < 30 * 60 * 1000) {

@@ -4,9 +4,9 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.Iterator;
 
-import net.oeffis.Departure;
 import net.oeffis.data.DataClientException;
 import net.oeffis.data.DataSource;
+import net.oeffis.data.Departure;
 import net.oeffis.data.itip.ITipClient;
 
 import org.w3c.dom.Document;

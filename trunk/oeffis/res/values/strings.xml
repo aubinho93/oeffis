@@ -9,4 +9,13 @@
     <!-- qando config -->
     <string name="qando.enc">ISO-8859-1</string>
     <string name="qando.url">http://api.wlvor.fluidtime.com/wlvor/api_get_monitor.ft?clientid=1258147077704&amp;clientversion=1.1.2&amp;stop=%s</string>
+    
+    <!--  settings strings -->
+    <string name="settings">Settings</string>
+    
+    <string name="updaterate">Update Rate</string>
+    <string name="updaterate.summary">Adjust the delay before the departure times are updated.</string>
+    
+    <string name="dataclient">Data Source</string>
+    <string name="dataclient.summary">Choose where the data comes from.</string>
 </resources>

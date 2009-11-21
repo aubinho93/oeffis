@@ -1,4 +1,4 @@
-package net.oeffis;
+package net.oeffis.data;
 
 import java.util.Date;
 

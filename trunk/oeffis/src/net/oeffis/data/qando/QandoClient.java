@@ -13,12 +13,12 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import net.oeffis.Departure;
 import net.oeffis.R;
 import net.oeffis.data.DataClient;
 import net.oeffis.data.DataClientException;
 import net.oeffis.data.DataSource;
 import net.oeffis.data.DateGuesser;
+import net.oeffis.data.Departure;
 import net.oeffis.data.XmlHttpDataSource;
 
 import org.w3c.dom.Document;
