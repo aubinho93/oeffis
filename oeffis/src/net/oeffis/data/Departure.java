@@ -1,8 +1,21 @@
 package net.oeffis.data;
 
+import java.util.Comparator;
 import java.util.Date;
 
 public class Departure {
+	
+	public static final Comparator<Departure> SORTBY_TIME = new Comparator<Departure>() {
+		public int compare(Departure a, Departure b) {
+			if(a.getDeparture() == null) {
+				return -1;
+			}
+			if(b.getDeparture() == null) {
+				return 1;
+			}
+			return a.getDeparture().before(b.getDeparture()) ? -1 : 1;
+		}
+	};
 	
 	private String line;
 	private String destination;

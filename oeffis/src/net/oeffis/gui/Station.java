@@ -2,23 +2,21 @@ package net.oeffis.gui;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import net.oeffis.R;
 import net.oeffis.Preferences;
+import net.oeffis.R;
 import net.oeffis.data.DataClient;
 import net.oeffis.data.DataClientException;
 import net.oeffis.data.Departure;
-import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.widget.ListView;
 
-public class Station extends Activity {
+public class Station extends ActivityBase {
 
 	private static final String TAG = Station.class.getCanonicalName();
 	
@@ -26,7 +24,14 @@ public class Station extends Activity {
 	private static final int TITLE_MSG = 2;
 	private static final String TITLE_MSG_KEY = "title";
 	
-	private Timer timer = new Timer(true);
+	private String station;
+	private DepartureAdapter departureAdapter;
+	private ArrayList<Departure> departures = new ArrayList<Departure>();
+	private Preferences preferences;
+	private Timer timer;
+	
+	private int seconds;
+	
 	private Handler handler = new Handler() {
 		@Override
 		public void handleMessage(Message msg) {
@@ -41,10 +46,17 @@ public class Station extends Activity {
 		}
 	};
 	
-	private String station;
-	private DepartureAdapter departureAdapter;
-	private ArrayList<Departure> departures = new ArrayList<Departure>();
-	private DataClient<String, Departure> dataClient;
+	private class Countdown extends TimerTask {
+		@Override
+		public void run() {
+			if(--seconds < 1) {
+				update();
+				seconds = preferences.getUpdateRate();
+			} else {
+				sendTitleMessage(handler, "Updating in " + seconds + "s");
+			}
+		}
+	};
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -53,62 +65,53 @@ public class Station extends Activity {
 		station = getIntent().getDataString().substring("oeffis:".length());
 		setContentView(R.layout.station);
 		
-		final Preferences settings = new Preferences(this);
-		
-		if(dataClient == null) {
-			dataClient = (DataClient<String, Departure>) settings.getDataClient();
-		}
+		preferences = new Preferences(this);
 		
 		departureAdapter = new DepartureAdapter(this, R.layout.departure_listitem, departures);
 		ListView departureView = (ListView) findViewById(R.id.departures);
 		departureView.setAdapter(departureAdapter);
-		
-		timer.schedule(new TimerTask() {
-			
-			private int seconds;
-			
-			@Override
-			public void run() {
-				
-				Message msg = new Message();
-				msg.what = TITLE_MSG;
-				Bundle bundle = new Bundle();
-				msg.setData(bundle);
-				
-				if(--seconds < 1) {
-					bundle.putString(TITLE_MSG_KEY, "Updating..");
-					try {
-						handler.sendMessage(msg);
-						ArrayList<Departure> res = new ArrayList<Departure>(dataClient.getDepartures(station));
-						Collections.sort(res, new Comparator<Departure>() {
-							public int compare(Departure a, Departure b) {
-								if(a.getDeparture() == null) {
-									return -1;
-								}
-								if(b.getDeparture() == null) {
-									return 1;
-								}
-								return a.getDeparture().before(b.getDeparture()) ? -1 : 1;
-							}
-						});
-						departures.clear();
-						departures.addAll(res);
-						handler.sendEmptyMessage(UPDATE_MSG);
-					} catch(DataClientException ex) {
-						Log.e(TAG, ex.getMessage(), ex);
-					}
-					seconds = settings.getUpdateRate();
-				} else {
-					bundle.putString(TITLE_MSG_KEY, "Updating in " + seconds + "s");
-					handler.sendMessage(msg);
-				}
-			}
-		}, 0, 1000);
+	}
+	
+	@Override
+	protected void onPause() {
+		super.onPause();
+		timer.cancel();
+	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		seconds = 0;
+		timer = new Timer(true);
+		timer.schedule(new Countdown(), 0, 1000);
 	}
 	
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
 		timer.cancel();
+	}
+	
+	private void update() {
+		sendTitleMessage(handler, "Updating..");
+		try {
+			DataClient<String, Departure> dataClient = (DataClient<String, Departure>) preferences.getDataClient();
+			ArrayList<Departure> res = new ArrayList<Departure>(dataClient.getDepartures(station));
+			Collections.sort(res, Departure.SORTBY_TIME);
+			departures.clear();
+			departures.addAll(res);
+			handler.sendEmptyMessage(UPDATE_MSG);
+		} catch(DataClientException ex) {
+			Log.e(TAG, ex.getMessage(), ex);
+		}
+	}
+	
+	private static void sendTitleMessage(Handler handler, String title) {
+		Message msg = new Message();
+		Bundle bundle = new Bundle();
+		msg.what = TITLE_MSG;
+		bundle.putString(TITLE_MSG_KEY, title);
+		msg.setData(bundle);
+		handler.sendMessage(msg);
 	}
 }
