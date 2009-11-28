@@ -1,14 +1,9 @@
 package net.oeffis.data.qando;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -86,21 +81,5 @@ public class QandoClient implements DataClient<String, Departure> {
 			Log.e(TAG, "url format or encoding not found or invalid");
 		}
 		return null;
-	}
-	
-	public Collection<String> getStations() {
-		ArrayList<String> stations = new ArrayList<String>();
-		try {
-			BufferedReader rd = new BufferedReader(new InputStreamReader(
-				context.getAssets().open("qando-stations.txt"), Charset.forName("UTF-8")));
-			String l;
-			while((l = rd.readLine()) != null) {
-				stations.add(l);
-			}
-			rd.close();
-		} catch(IOException ex) {
-			Log.e(TAG, ex.getMessage(), ex);
-		}
-		return stations;
 	}
 }

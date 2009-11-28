@@ -1,7 +1,5 @@
 package net.oeffis;
 
-import java.lang.reflect.Constructor;
-
 import net.oeffis.data.DataClient;
 import net.oeffis.data.qando.QandoClient;
 import android.content.Context;
@@ -24,14 +22,22 @@ public class Preferences {
 	}
 	
 	public DataClient<?,?> getDataClient() {
+		try {
+			return getDataClientClass().getConstructor(Context.class).newInstance(context);
+		} catch(Exception ex) {
+			Log.e(TAG, "could not instantiate dataclient, using default", ex);
+			return new QandoClient(context);
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	public Class<? extends DataClient<?,?>> getDataClientClass() {
 		String className = sharedPrefs.getString(KEY_DATA_CLIENT, QandoClient.class.getName());
 		try {
-			Class<DataClient<?,?>> dataClientClass = (Class<DataClient<?,?>>) Class.forName(className);
-			Constructor<DataClient<?,?>> constructor = dataClientClass.getConstructor(Context.class);
-			return constructor.newInstance(context);
-		} catch(Exception ex) {
-			Log.e(TAG, "could not instantiate " + className + ", using default data client");
-			return new QandoClient(context);
+			return (Class<? extends DataClient<?,?>>) Class.forName(className);
+		} catch(ClassNotFoundException ex) {
+			Log.e(TAG, "could not find " + className + ", using default");
+			return QandoClient.class;
 		}
 	}
 	
