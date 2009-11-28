@@ -1,4 +1,4 @@
-package net.oeffis.gui;
+package net.oeffis.gui.adapter;
 
 import java.util.Date;
 import java.util.List;

@@ -1,13 +1,9 @@
 package net.oeffis.data.itip;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -72,22 +68,6 @@ public class ITipClient implements DataClient<String, Departure> {
 		} catch(Exception ex) {
 			throw new DataClientException(ex.getMessage(), ex);
 		}
-	}
-	
-	public Collection<String> getStations() {
-		ArrayList<String> stations = new ArrayList<String>();
-		try {
-			BufferedReader rd = new BufferedReader(new InputStreamReader(
-				context.getAssets().open("itip-stations.txt"), Charset.forName("UTF-8")));
-			String l;
-			while((l = rd.readLine()) != null) {
-				stations.add(l);
-			}
-			rd.close();
-		} catch(IOException ex) {
-			Log.e(TAG, ex.getMessage(), ex);
-		}
-		return stations;
 	}
 	
 	private URL getUrl(String station) {

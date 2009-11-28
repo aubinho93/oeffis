@@ -5,7 +5,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import net.oeffis.data.DataClient;
+import net.oeffis.Preferences;
+import net.oeffis.data.Station;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
@@ -20,9 +21,11 @@ public class DbAdapter {
 	
 	private Context context;
 	private SQLiteDatabase db;
+	private Preferences preferences;
 	
 	public DbAdapter(Context context) {
 		this.context = context;
+		preferences = new Preferences(context);
 	}
 	
 	public void open() throws SQLException {
@@ -58,15 +61,80 @@ public class DbAdapter {
 		}
 	}
 	
-	public Cursor fetchStations(Class<? extends DataClient> client) {
-		return db.rawQuery("select s._id, s.string as station " +
-			"from client_string cs " +
-				"join clients c on c._id = cs.client " +
-				"join strings s on s._id = cs.string " +
-			"where c.class = ?", new String[] { client.getName() });
+	public Station fetchStation(long id) {
+		Station station = null;
+		Cursor c = db.rawQuery("select " +
+				"_id," +
+				"name," +
+				"favorite " +
+			"from stations " +
+			"where _id = " + id, null);
+		if(c.moveToNext()) {
+			station = fromCursor(c);
+		}
+		
+		c.close();
+		
+		return station;
+	}
+	
+	public String fetchClientStringForStation(Class<?> client, long station) {
+		String string = null;
+		Cursor c = db.rawQuery("select str.string " +
+			"from station_client_string scs " +
+				"join clients cli on cli._id = scs.client " +
+				"join strings str on str._id = scs.string " +
+			"where cli.class = ? and scs.station = " + station,
+			new String[] { client.getName() });
+		if(c.moveToNext()) {
+			string = c.getString(0);
+		}
+		c.close();
+		return string;
+	}
+	
+	public Cursor fetchStations() {
+		return fetchStations(preferences.getDataClientClass());
+	}
+	
+	public Cursor fetchStations(Class<?> client) {
+		return db.rawQuery("select " +
+				"sta._id," +
+				"sta.name as station," +
+				"sta.favorite as favorite " +
+			"from station_client_string scs " +
+				"join stations sta on sta._id = scs.station " +
+				"join clients cli on cli._id = scs.client " +
+			"where cli.class = ?", new String[] { client.getName() });
+	}
+	
+	public Cursor fetchFavorites() {
+		return fetchFavorites(preferences.getDataClientClass());
+	}
+	
+	public Cursor fetchFavorites(Class<?> client) {
+		return db.rawQuery("select " +
+				"sta._id," +
+				"sta.name as station," +
+				"sta.favorite as favorite " +
+			"from station_client_string scs " +
+				"join stations sta on sta._id = scs.station " +
+				"join clients cli on cli._id = scs.client " +
+			"where " +
+				"cli.class = ? " +
+				"and favorite = 1", new String[] { client.getName() });
+	}
+	
+	public void setFavorite(long stationId, boolean isFavorite) {
+		db.execSQL("update stations set favorite = ? where _id = ?",
+			new Object[] { isFavorite ? 1 : 0, stationId });
 	}
 	
 	public void close() {
 		db.close();
+	}
+	
+	public static Station fromCursor(Cursor c) {
+		return new Station(c.getLong(0), c.getString(1), c.getInt(2) > 0);
 	}
 }

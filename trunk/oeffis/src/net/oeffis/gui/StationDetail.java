@@ -10,21 +10,24 @@ import net.oeffis.R;
 import net.oeffis.data.DataClient;
 import net.oeffis.data.DataClientException;
 import net.oeffis.data.Departure;
+import net.oeffis.data.Station;
+import net.oeffis.data.db.DbAdapter;
+import net.oeffis.gui.adapter.DepartureAdapter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.widget.ListView;
 
-public class Station extends ActivityBase {
+public class StationDetail extends ActivityBase {
 
-	private static final String TAG = Station.class.getCanonicalName();
+	private static final String TAG = StationDetail.class.getCanonicalName();
 	
 	private static final int UPDATE_MSG = 1;
 	private static final int TITLE_MSG = 2;
 	private static final String TITLE_MSG_KEY = "title";
 	
-	private String station;
+	private Station station;
 	private DepartureAdapter departureAdapter;
 	private ArrayList<Departure> departures = new ArrayList<Departure>();
 	private Preferences preferences;
@@ -37,7 +40,8 @@ public class Station extends ActivityBase {
 		public void handleMessage(Message msg) {
 			switch(msg.what) {
 			case TITLE_MSG:
-				setTitle(String.format("%s (%s)", station, msg.getData().getString(TITLE_MSG_KEY)));
+				setTitle(String.format("%s (%s)",
+					station.getName(), msg.getData().getString(TITLE_MSG_KEY)));
 				break;
 			case UPDATE_MSG:
 				departureAdapter.notifyDataSetChanged();
@@ -62,11 +66,15 @@ public class Station extends ActivityBase {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		station = getIntent().getDataString().substring("oeffis:".length());
+		long stationId = Long.parseLong(getIntent().getData().getLastPathSegment());
+		
+		DbAdapter db = new DbAdapter(this);
+		db.open();
+		station = db.fetchStation(stationId);
+		db.close();
+		
 		setContentView(R.layout.station);
-		
 		preferences = new Preferences(this);
-		
 		departureAdapter = new DepartureAdapter(this, R.layout.departure_listitem, departures);
 		ListView departureView = (ListView) findViewById(R.id.departures);
 		departureView.setAdapter(departureAdapter);
@@ -95,8 +103,14 @@ public class Station extends ActivityBase {
 	private void update() {
 		sendTitleMessage(handler, "Updating..");
 		try {
-			DataClient<String, Departure> dataClient = (DataClient<String, Departure>) preferences.getDataClient();
-			ArrayList<Departure> res = new ArrayList<Departure>(dataClient.getDepartures(station));
+			DataClient<String, Departure> dataClient =
+				(DataClient<String, Departure>) preferences.getDataClient();
+			DbAdapter db = new DbAdapter(this);
+			db.open();
+			String s = db.fetchClientStringForStation(dataClient.getClass(), station.getId());
+			db.close();
+			
+			ArrayList<Departure> res = new ArrayList<Departure>(dataClient.getDepartures(s));
 			Collections.sort(res, Departure.SORTBY_TIME);
 			departures.clear();
 			departures.addAll(res);
